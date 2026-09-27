@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rooted — Trade skills, grow together</title>
+<style>
+  :root{
+    --cream:#FAF5EA;
+    --parchment:#F3EAD9;
+    --sage:#8CA07A;
+    --sage-dark:#6E8259;
+    --rose:#D8A6A0;
+    --rose-dark:#C08882;
+    --amber:#E0A94C;
+    --amber-dark:#C68A2E;
+    --ink:#40352A;
+    --ink-soft:#6B5D4E;
+    --line:#E4D8C2;
+    --white:#FFFDF9;
+    --shadow: 0 10px 30px rgba(64,53,42,0.10);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family: -apple-system, "Segoe UI", "Trebuchet MS", Verdana, sans-serif;
+    line-height:1.5;
+    position:relative;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.serif{
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight:700;
+    color:var(--ink);
+    margin:0;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  /* ---------- floating dust motes ---------- */
+  #motes{position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden;}
+  .mote{
+    position:absolute; bottom:-10px; border-radius:50%;
+    background: radial-gradient(circle, rgba(224,169,76,0.55), rgba(224,169,76,0));
+    animation: float-up linear infinite;
+  }
+  @keyframes float-up{
+    0%{ transform:translateY(0) translateX(0); opacity:0;}
+    10%{opacity:0.7;}
+    90%{opacity:0.5;}
+    100%{ transform:translateY(-110vh) translateX(20px); opacity:0;}
+  }
+
+  /* ---------- nav ---------- */
+  header.top{
+    position:sticky; top:0; z-index:50;
+    background:rgba(250,245,234,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-wrap{
+    max-width:1120px; margin:0 auto; padding:14px 24px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:38px; height:38px; border-radius:50%;
+    background: radial-gradient(circle at 32% 28%, #C7D9B4, var(--sage) 70%);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: inset 0 -4px 8px rgba(0,0,0,0.08);
+  }
+  .brand-name{font-size:1.35rem; letter-spacing:0.2px;}
+  .brand-sub{font-size:0.72rem; color:var(--ink-soft); margin-top:-2px;}
+  nav.links{display:flex; gap:6px;}
+  nav.links button{
+    background:none; border:none; padding:8px 14px; border-radius:999px;
+    font-size:0.95rem; color:var(--ink-soft); cursor:pointer; transition:.2s;
+  }
+  nav.links button.active, nav.links button:hover{background:var(--parchment); color:var(--ink);}
+  .seed-count{
+    display:flex; align-items:center; gap:7px; background:var(--parchment);
+    border:1px solid var(--line); padding:7px 13px; border-radius:999px; font-size:0.85rem; color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .seed-count b{color:var(--sage-dark); font-size:1rem;}
+
+  main{position:relative; z-index:2;}
+  .view{display:none; max-width:1120px; margin:0 auto; padding:38px 24px 90px;}
+  .view.active{display:block; animation: reveal .5s ease both;}
+  @keyframes reveal{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ---------- hero ---------- */
+  .hero{
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;
+    padding:46px 0 30px;
+  }
+  .hero h1{font-size:2.6rem; line-height:1.15;}
+  .hero h1 .accent{color:var(--sage-dark); font-style:italic;}
+  .hero p.lead{color:var(--ink-soft); font-size:1.08rem; max-width:46ch; margin-top:14px;}
+  .hero-art{
+    aspect-ratio:1/1; border-radius:32px; position:relative; overflow:hidden;
+    background: radial-gradient(circle at 30% 20%, #F6ECD8, var(--parchment) 60%);
+    border:1px solid var(--line); box-shadow:var(--shadow);
+  }
+  .hero-art .blob{position:absolute; border-radius:50%; opacity:0.75;}
+  .hero-art .b1{width:150px; height:150px; background:var(--sage); top:14%; left:10%; filter:blur(1px);}
+  .hero-art .b2{width:110px; height:110px; background:var(--rose); bottom:16%; right:14%;}
+  .hero-art .b3{width:70px; height:70px; background:var(--amber); bottom:34%; left:32%;}
+  .hero-art .leaf{position:absolute; font-size:2.1rem; animation: sway 6s ease-in-out infinite;}
+  @keyframes sway{0%,100%{transform:rotate(-6deg);} 50%{transform:rotate(6deg);}}
+
+  .search-row{display:flex; gap:10px; margin-top:26px; flex-wrap:wrap;}
+  .search-box{
+    flex:1; min-width:220px; display:flex; align-items:center; gap:10px;
+    background:var(--white); border:1px solid var(--line); border-radius:16px; padding:12px 16px;
+    box-shadow: var(--shadow);
+  }
+  .search-box input{
+    border:none; outline:none; background:none; width:100%; font-size:0.98rem; color:var(--ink); font-family:inherit;
+  }
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;}
+  .chip{
+    padding:8px 16px; border-radius:999px; border:1px solid var(--line); background:var(--white);
+    font-size:0.87rem; cursor:pointer; color:var(--ink-soft); transition:.2s;
+  }
+  .chip.active{background:var(--sage); border-color:var(--sage); color:white;}
+  .chip:hover:not(.active){border-color:var(--sage);}
+
+  .tab-row{display:flex; gap:8px; margin:30px 0 18px;}
+  .tab{
+    padding:9px 20px; border-radius:12px 12px 0 0; border:1px solid var(--line); border-bottom:none;
+    background:var(--parchment); color:var(--ink-soft); cursor:pointer; font-size:0.92rem;
+  }
+  .tab.active{background:var(--white); color:var(--ink); font-weight:bold; box-shadow: 0 -2px 8px rgba(64,53,42,0.05);}
+
+  .board-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(270px,1fr)); gap:18px;
+  }
+  .card{
+    background:var(--white); border:1px solid var(--line); border-radius:18px; padding:18px;
+    box-shadow:var(--shadow); display:flex; flex-direction:column; gap:10px;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{transform:translateY(-3px); box-shadow:0 16px 34px rgba(64,53,42,0.14);}
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+  .cat-badge{
+    font-size:0.72rem; padding:4px 10px; border-radius:999px; white-space:nowrap;
+    background:var(--parchment); color:var(--ink-soft);
+  }
+  .cat-Skills{background:#E4EEDA; color:var(--sage-dark);}
+  .cat-StudyGear{background:#F3E4E0; color:var(--rose-dark);}
+  .cat-Tutoring{background:#FBEBD1; color:var(--amber-dark);}
+  .cat-CreativeTech{background:#E2E9F0; color:#4C6584;}
+  .kind-tag{font-size:0.7rem; text-transform:none; font-weight:600;}
+  .kind-offer{color:var(--sage-dark);}
+  .kind-request{color:var(--rose-dark);}
+  .card h3{font-size:1.08rem; line-height:1.3;}
+  .card p{color:var(--ink-soft); font-size:0.9rem; margin:0;}
+  .card-foot{display:flex; align-items:center; justify-content:space-between; margin-top:6px;}
+  .avatar-row{display:flex; align-items:center; gap:8px;}
+  .avatar{
+    width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:0.8rem; color:white; font-weight:bold;
+  }
+  .name-loc{font-size:0.78rem; color:var(--ink-soft); line-height:1.2;}
+  .trade-btn{
+    background:var(--ink); color:white; border:none; padding:8px 15px; border-radius:10px;
+    font-size:0.83rem; cursor:pointer; transition:.2s;
+  }
+  .trade-btn:hover{background:var(--sage-dark);}
+
+  .empty{text-align:center; padding:60px 20px; color:var(--ink-soft);}
+
+  /* ---------- matchmaker ---------- */
+  .mm-wrap{display:grid; grid-template-columns:1fr 1fr; gap:26px; align-items:start;}
+  @media (max-width:800px){.mm-wrap{grid-template-columns:1fr;} .hero{grid-template-columns:1fr;}}
+  .panel{
+    background:var(--white); border:1px solid var(--line); border-radius:20px; padding:26px;
+    box-shadow:var(--shadow);
+  }
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:0.85rem; color:var(--ink-soft); margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%; padding:11px 13px; border-radius:11px; border:1px solid var(--line);
+    background:var(--cream); font-size:0.94rem; font-family:inherit; color:var(--ink); outline:none;
+  }
+  .field textarea{resize:vertical; min-height:70px;}
+  .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--sage);}
+  .primary-btn{
+    background:var(--sage-dark); color:white; border:none; padding:13px 22px; border-radius:12px;
+    font-size:0.98rem; cursor:pointer; width:100%; transition:.2s; font-weight:600;
+  }
+  .primary-btn:hover{background:#5B6E48;}
+  .match-result{
+    border-radius:18px; padding:22px; min-height:220px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; gap:10px;
+    background: radial-gradient(circle at 50% 0%, #F6ECD8, var(--parchment));
+    border:1px dashed var(--line); color:var(--ink-soft);
+  }
+  .match-result.found{
+    background: radial-gradient(circle at 50% 0%, #E9F1DF, var(--parchment)); border:1px solid var(--sage);
+    animation: pop-in .45s ease both;
+  }
+  @keyframes pop-in{0%{transform:scale(0.92); opacity:0;} 100%{transform:scale(1); opacity:1;}}
+  .match-icon{font-size:2.4rem;}
+  .match-title{font-family:Georgia,serif; font-size:1.15rem; color:var(--ink); font-weight:bold;}
+  .match-detail{font-size:0.92rem; color:var(--ink-soft); max-width:32ch;}
+  .match-confidence{
+    font-size:0.78rem; background:var(--sage); color:white; padding:4px 12px; border-radius:999px;
+  }
+
+  /* ---------- garden ---------- */
+  .garden-frame{
+    border-radius:26px; padding:0; overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow);
+    background: linear-gradient(180deg, #DCE9CC 0%, #C9DCB4 55%, #B7CE9E 100%);
+    position:relative; min-height:420px;
+  }
+  .garden-sky{position:absolute; inset:0; overflow:hidden;}
+  .garden-sun{
+    position:absolute; top:26px; right:40px; width:70px; height:70px; border-radius:50%;
+    background: radial-gradient(circle, #FCE3A2, #E0A94C 70%); opacity:0.9;
+  }
+  .garden-ground{
+    position:absolute; bottom:0; left:0; right:0; height:38%;
+    background: linear-gradient(180deg, #8C7A54 0%, #6E5D3C 100%);
+    border-top:4px solid #7A6944;
+  }
+  .plants{
+    position:absolute; bottom:0; left:0; right:0; height:100%;
+    display:flex; align-items:flex-end; justify-content:center; flex-wrap:wrap; gap:6px 14px;
+    padding:0 30px 14px;
+  }
+  .plant{font-size:2.6rem; transform-origin:bottom center; animation: grow .6s cubic-bezier(.34,1.56,.64,1) both;}
+  @keyframes grow{0%{transform:scale(0) translateY(20px); opacity:0;} 100%{transform:scale(1) translateY(0); opacity:1;}}
+  .garden-caption{
+    position:relative; z-index:2; text-align:center; padding:18px 20px 0;
+  }
+  .garden-stats{
+    display:flex; justify-content:center; gap:34px; margin-top:14px; flex-wrap:wrap;
+    position:relative; z-index:2;
+  }
+  .stat{text-align:center;}
+  .stat b{display:block; font-size:1.5rem; font-family:Georgia,serif; color:var(--sage-dark);}
+  .stat span{font-size:0.78rem; color:var(--ink-soft);}
+  .garden-log{
+    max-width:640px; margin:26px auto 0; background:var(--white); border:1px solid var(--line);
+    border-radius:16px; padding:6px; box-shadow:var(--shadow);
+  }
+  .log-row{
+    display:flex; justify-content:space-between; padding:10px 14px; font-size:0.86rem; color:var(--ink-soft);
+    border-bottom:1px solid var(--line);
+  }
+  .log-row:last-child{border-bottom:none;}
+
+  /* ---------- modal ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(64,53,42,0.42); backdrop-filter:blur(2px);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .overlay.active{display:flex;}
+  .modal{
+    background:var(--white); border-radius:22px; max-width:460px; width:100%; padding:26px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.25); position:relative; animation: pop-in .35s ease both;
+    max-height:88vh; overflow-y:auto;
+  }
+  .modal-close{
+    position:absolute; top:16px; right:18px; background:none; border:none; font-size:1.3rem;
+    color:var(--ink-soft); cursor:pointer;
+  }
+  .modal h2{font-size:1.3rem; margin-bottom:4px;}
+  .trade-item{
+    display:flex; gap:12px; align-items:center; background:var(--cream); border-radius:14px; padding:12px; margin:16px 0;
+  }
+  .trade-item .avatar{width:40px; height:40px; font-size:1rem;}
+  .chat-bubble{
+    background:var(--parchment); border-radius:14px 14px 14px 4px; padding:10px 14px; font-size:0.88rem;
+    max-width:85%; margin-bottom:8px; color:var(--ink);
+  }
+  .chat-bubble.me{
+    background:var(--sage); color:white; border-radius:14px 14px 4px 14px; margin-left:auto;
+  }
+  .accept-row{display:flex; gap:10px; margin-top:18px;}
+  .accept-row button{flex:1; padding:12px; border-radius:12px; border:none; font-size:0.92rem; cursor:pointer;}
+  .accept-btn{background:var(--sage-dark); color:white;}
+  .decline-btn{background:var(--parchment); color:var(--ink-soft);}
+
+  .checkmark-pop{
+    position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:200; pointer-events:none;
+  }
+  .checkmark-pop.show{display:flex;}
+  .check-circle{
+    width:100px; height:100px; border-radius:50%; background:var(--sage);
+    display:flex; align-items:center; justify-content:center; color:white; font-size:3rem;
+    animation: check-pop .55s cubic-bezier(.34,1.56,.64,1) both;
+    box-shadow:0 20px 50px rgba(0,0,0,0.25);
+  }
+  @keyframes check-pop{0%{transform:scale(0);} 70%{transform:scale(1.15);} 100%{transform:scale(1);}}
+
+  .toast{
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); z-index:150;
+    background:var(--ink); color:white; padding:13px 22px; border-radius:14px; font-size:0.9rem;
+    opacity:0; transition:.35s; box-shadow:0 14px 30px rgba(0,0,0,0.25); display:flex; align-items:center; gap:10px;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  footer{text-align:center; padding:26px; color:var(--ink-soft); font-size:0.82rem; border-top:1px solid var(--line);}
+
+  @media (max-width:640px){
+    .nav-wrap{flex-wrap:wrap;}
+    nav.links{order:3; width:100%; justify-content:center;}
+    .hero h1{font-size:2rem;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001s !important; transition-duration:0.001s !important;}
+  }
+</style>
+</head>
+<body>
+
+<div id="motes"></div>
+
+<header class="top">
+  <div class="nav-wrap">
+    <div class="brand">
+      <div class="brand-mark">🌱</div>
+      <div>
+        <div class="brand-name serif">Rooted</div>
+        <div class="brand-sub">trade skills, grow together</div>
+      </div>
+    </div>
+    <nav class="links">
+      <button class="nav-btn active" data-view="board">Board</button>
+      <button class="nav-btn" data-view="matchmaker">Matchmaker</button>
+      <button class="nav-btn" data-view="garden">Garden</button>
+    </nav>
+    <div class="seed-count">🌾 <b id="tradeCountNav">14</b> trades rooted</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ BOARD VIEW ============ -->
+  <section class="view active" id="view-board">
+    <div class="hero">
+      <div>
+        <h1>Trade what you know.<br>Borrow what you need. <span class="accent">No cash, ever.</span></h1>
+        <p class="lead">Rooted is your campus's quiet little economy — swap tutoring for tech help, textbooks for guitar lessons, and watch a real garden grow with every trade you make.</p>
+        <div class="search-row">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" id="searchInput" placeholder="Search skills, gear, or people…">
+          </div>
+        </div>
+        <div class="chip-row" id="categoryChips">
+          <div class="chip active" data-cat="all">All</div>
+          <div class="chip" data-cat="Skills">Skills</div>
+          <div class="chip" data-cat="StudyGear">Study Gear</div>
+          <div class="chip" data-cat="Tutoring">Tutoring</div>
+          <div class="chip" data-cat="CreativeTech">Creative &amp; Tech</div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="leaf" style="top:20%; left:44%;">🌿</div>
+        <div class="leaf" style="bottom:24%; left:20%; animation-delay:1s;">🍃</div>
+        <div class="leaf" style="top:44%; right:16%; animation-delay:2s;">🌾</div>
+      </div>
+    </div>
+
+    <div class="tab-row">
+      <div class="tab active" data-kind="all">All Posts</div>
+      <div class="tab" data-kind="offer">Offers</div>
+      <div class="tab" data-kind="request">Requests</div>
+    </div>
+
+    <div class="board-grid" id="boardGrid"></div>
+    <div class="empty" id="emptyState" style="display:none;">No matches yet — try a different search or category. 🌾</div>
+  </section>
+
+  <!-- ============ MATCHMAKER VIEW ============ -->
+  <section class="view" id="view-matchmaker">
+    <h1 style="font-size:2rem; margin-bottom:6px;">AI Matchmaker</h1>
+    <p class="lead" style="color:var(--ink-soft); margin-bottom:26px;">Tell us what you can offer and what you're after — we'll find your closest match nearby.</p>
+    <div class="mm-wrap">
+      <div class="panel">
+        <div class="field">
+          <label>What can you offer?</label>
+          <input type="text" id="offerInput" placeholder="e.g. Calculus tutoring, French conversation, a graphing calculator…">
+        </div>
+        <div class="field">
+          <label>What do you need?</label>
+          <input type="text" id="needInput" placeholder="e.g. Guitar lessons, a lab coat, help with Python…">
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <select id="mmCategory">
+            <option value="Skills">Skills</option>
+            <option value="StudyGear">Study Gear</option>
+            <option value="Tutoring">Tutoring</option>
+            <option value="CreativeTech">Creative &amp; Tech</option>
+          </select>
+        </div>
+        <button class="primary-btn" id="findMatchBtn">Find my match</button>
+      </div>
+      <div class="match-result" id="matchResult">
+        <div style="font-size:2.2rem;">🤝</div>
+        <div>Fill in the form and we'll surface the best match from the community.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GARDEN VIEW ============ -->
+  <section class="view" id="view-garden">
+    <div class="garden-caption">
+      <h1 style="font-size:1.9rem;">The Community Garden</h1>
+      <p class="lead" style="color:var(--ink-soft);">Every completed trade plants something new. This is what your community has grown together.</p>
+    </div>
+    <div class="garden-frame" style="margin-top:20px;">
+      <div class="garden-sky"><div class="garden-sun"></div></div>
+      <div class="garden-ground"></div>
+      <div class="plants" id="plantsWrap"></div>
+    </div>
+    <div class="garden-stats">
+      <div class="stat"><b id="statTrades">14</b><span>trades completed</span></div>
+      <div class="stat"><b id="statPlants">14</b><span>plants grown</span></div>
+      <div class="stat"><b id="statPeople">9</b><span>people connected</span></div>
+    </div>
+    <div class="garden-log" id="gardenLog"></div>
+  </section>
+
+</main>
+
+<footer>Rooted — a hyper-local barter network. No money changes hands, just skills, gear, and a little bit of trust.</footer>
+
+<!-- ============ TRADE MODAL ============ -->
+<div class="overlay" id="tradeOverlay">
+  <div class="modal">
+    <button class="modal-close" id="closeTradeModal">✕</button>
+    <h2 class="serif" id="tradeModalTitle">Propose a trade</h2>
+    <p style="color:var(--ink-soft); font-size:0.9rem; margin-top:2px;" id="tradeModalSub"></p>
+    <div class="trade-item" id="tradeModalItem"></div>
+    <div id="chatArea" style="margin-top:14px;"></div>
+    <div class="accept-row">
+      <button class="decline-btn" id="declineTradeBtn">Not now</button>
+      <button class="accept-btn" id="acceptTradeBtn">Accept trade</button>
+    </div>
+  </div>
+</div>
+
+<div class="checkmark-pop" id="checkmarkPop"><div class="check-circle">✓</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------- Mock data ----------------
+  var COLORS = ["#8CA07A","#D8A6A0","#E0A94C","#7C93AE","#B98CA0","#A0B87C"];
+  function colorFor(name){ var s=0; for(var i=0;i<name.length;i++){s+=name.charCodeAt(i);} return COLORS[s%COLORS.length]; }
+  function initials(name){ return name.split(" ").map(function(p){return p[0];}).join("").slice(0,2).toUpperCase(); }
+
+  var posts = [
+    {id:1, kind:"offer", cat:"Tutoring", title:"Calculus & Pre-Calc Tutoring", desc:"Patient AP Calc tutor, 2 years experience. Can trade for language practice or design help.", name:"Priya N.", loc:"North Quad", tags:["math","calculus"]},
+    {id:2, kind:"request", cat:"Skills", title:"Need Spanish Conversation Partner", desc:"Prepping for a trip abroad — want casual weekly conversation practice.", name:"Marcus T.", loc:"Riverside Hall", tags:["spanish","language"]},
+    {id:3, kind:"offer", cat:"StudyGear", title:"TI-84 Graphing Calculator (Loan)", desc:"Barely used, available for the semester in exchange for notetaking help in Chem.", name:"Elena R.", loc:"Maple Commons", tags:["calculator","math"]},
+    {id:4, kind:"offer", cat:"CreativeTech", title:"Logo & Poster Design", desc:"Design student offering quick logo/poster work for clubs or events.", name:"Jonah K.", loc:"Art Building", tags:["design","photoshop"]},
+    {id:5, kind:"request", cat:"CreativeTech", title:"Need Help Setting Up a Portfolio Site", desc:"Building a personal site, need basic HTML/CSS guidance.", name:"Aisha B.", loc:"Tech Annex", tags:["coding","web"]},
+    {id:6, kind:"offer", cat:"Tutoring", title:"Intro Python & Data Structures Help", desc:"CS sophomore, happy to walk through homework or debug together.", name:"Sam W.", loc:"Library West", tags:["python","cs"]},
+    {id:7, kind:"request", cat:"Skills", title:"Looking for Guitar Lessons", desc:"Complete beginner, own a guitar, just need someone patient.", name:"Devon L.", loc:"South Hall", tags:["music","guitar"]},
+    {id:8, kind:"offer", cat:"Skills", title:"Guitar & Music Theory Basics", desc:"Been playing 6 years, happy to teach chords and basic theory.", name:"Nina F.", loc:"Riverside Hall", tags:["music","guitar"]},
+    {id:9, kind:"offer", cat:"StudyGear", title:"Organic Chemistry Textbook (2 editions)", desc:"Will lend for the semester in exchange for lab report proofreading.", name:"Priya N.", loc:"North Quad", tags:["chemistry","textbook"]},
+    {id:10, kind:"request", cat:"StudyGear", title:"Need a DSLR Camera for a Weekend Project", desc:"Film class project, just need a camera for one weekend.", name:"Theo M.", loc:"Art Building", tags:["camera","film"]},
+    {id:11, kind:"offer", cat:"CreativeTech", title:"Video Editing (Premiere Pro)", desc:"Can cut and color a short project in exchange for tutoring or gear loans.", name:"Jonah K.", loc:"Art Building", tags:["video","editing"]},
+    {id:12, kind:"request", cat:"Tutoring", title:"Need Help With Statistics Homework", desc:"Struggling with intro stats, weekly help would be huge.", name:"Casey P.", loc:"Maple Commons", tags:["statistics","math"]},
+    {id:13, kind:"offer", cat:"Skills", title:"Home-Cooked Meal Swap", desc:"I cook big batches — trade a home-cooked meal for small favors or skills.", name:"Wren A.", loc:"South Hall", tags:["cooking","food"]},
+    {id:14, kind:"request", cat:"CreativeTech", title:"Need a Laptop Charger (60W, USB-C)", desc:"Mine broke mid-semester, just need one for a few days.", name:"Marcus T.", loc:"Riverside Hall", tags:["laptop","charger"]},
+    {id:15, kind:"offer", cat:"Tutoring", title:"Essay Editing & Writing Feedback", desc:"English major, glad to proofread essays or personal statements.", name:"Aisha B.", loc:"Tech Annex", tags:["writing","editing"]},
+    {id:16, kind:"request", cat:"Skills", title:"Want to Learn Basic Pottery", desc:"Have studio access, just need someone to show me the wheel.", name:"Devon L.", loc:"South Hall", tags:["pottery","art"]}
+  ];
+
+  var catLabel = {Skills:"Skills", StudyGear:"Study Gear", Tutoring:"Tutoring", CreativeTech:"Creative & Tech"};
+  var plantEmojis = ["🌱","🌿","🌷","🌻","🌵","🌼","🍀","🌳","🌲","🪴","🌹","🍄"];
+
+  var gardenLogInit = [
+    {a:"Priya N.", b:"Elena R.", what:"Calculus tutoring ↔ TI-84 loan"},
+    {a:"Jonah K.", b:"Sam W.", what:"Logo design ↔ Python debugging"},
+    {a:"Nina F.", b:"Devon L.", what:"Guitar lessons ↔ home-cooked meal"},
+    {a:"Aisha B.", b:"Casey P.", what:"Essay editing ↔ stats notes"},
+    {a:"Wren A.", b:"Theo M.", what:"Home cooking ↔ camera loan"}
+  ];
+
+  var state = {
+    tradeCount: 14,
+    plants: [],
+    people: 9,
+    log: gardenLogInit.slice()
+  };
+
+  // ---------------- Dust motes ----------------
+  (function motes(){
+    var wrap = document.getElementById("motes");
+    for(var i=0;i<16;i++){
+      var m = document.createElement("div");
+      m.className = "mote";
+      var size = 3 + Math.random()*5;
+      m.style.width = size+"px"; m.style.height = size+"px";
+      m.style.left = (Math.random()*100)+"vw";
+      m.style.animationDuration = (14 + Math.random()*14)+"s";
+      m.style.animationDelay = (Math.random()*14)+"s";
+      wrap.appendChild(m);
+    }
+  })();
+
+  // ---------------- Nav ----------------
+  var navBtns = document.querySelectorAll(".nav-btn");
+  var views = document.querySelectorAll(".view");
+  navBtns.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      navBtns.forEach(function(b){b.classList.remove("active");});
+      btn.classList.add("active");
+      views.forEach(function(v){v.classList.remove("active");});
+      document.getElementById("view-"+btn.dataset.view).classList.add("active");
+      if(btn.dataset.view === "garden"){ renderGarden(); }
+    });
+  });
+
+  // ---------------- Board filtering ----------------
+  var activeCat = "all", activeKind = "all", query = "";
+
+  document.getElementById("categoryChips").addEventListener("click", function(e){
+    var chip = e.target.closest(".chip");
+    if(!chip) return;
+    document.querySelectorAll("#categoryChips .chip").forEach(function(c){c.classList.remove("active");});
+    chip.classList.add("active");
+    activeCat = chip.dataset.cat;
+    renderBoard();
+  });
+
+  document.querySelector(".tab-row").addEventListener("click", function(e){
+    var tab = e.target.closest(".tab");
+    if(!tab) return;
+    document.querySelectorAll(".tab-row .tab").forEach(function(t){t.classList.remove("active");});
+    tab.classList.add("active");
+    activeKind = tab.dataset.kind;
+    renderBoard();
+  });
+
+  document.getElementById("searchInput").addEventListener("input", function(e){
+    query = e.target.value.toLowerCase().trim();
+    renderBoard();
+  });
+
+  function renderBoard(){
+    var grid = document.getElementById("boardGrid");
+    grid.innerHTML = "";
+    var filtered = posts.filter(function(p){
+      var catOk = activeCat === "all" || p.cat === activeCat;
+      var kindOk = activeKind === "all" || p.kind === activeKind;
+      var qOk = !query || (p.title.toLowerCase().indexOf(query)>-1 || p.desc.toLowerCase().indexOf(query)>-1 ||
+                 p.tags.join(" ").toLowerCase().indexOf(query)>-1 || p.name.toLowerCase().indexOf(query)>-1);
+      return catOk && kindOk && qOk;
+    });
+    document.getElementById("emptyState").style.display = filtered.length ? "none" : "block";
+    filtered.forEach(function(p){
+      var card = document.createElement("div");
+      card.className = "card";
+      var col = colorFor(p.name);
+      card.innerHTML =
+        '<div class="card-top">'+
+          '<span class="cat-badge cat-'+p.cat+'">'+catLabel[p.cat]+'</span>'+
+          '<span class="kind-tag kind-'+p.kind+'">'+(p.kind==="offer"?"● Offer":"◐ Request")+'</span>'+
+        '</div>'+
+        '<h3>'+p.title+'</h3>'+
+        '<p>'+p.desc+'</p>'+
+        '<div class="card-foot">'+
+          '<div class="avatar-row">'+
+            '<div class="avatar" style="background:'+col+'">'+initials(p.name)+'</div>'+
+            '<div class="name-loc">'+p.name+'<br>'+p.loc+'</div>'+
+          '</div>'+
+          '<button class="trade-btn" data-id="'+p.id+'">Propose Trade</button>'+
+        '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  document.getElementById("boardGrid").addEventListener("click", function(e){
+    var btn = e.target.closest(".trade-btn");
+    if(!btn) return;
+    var post = posts.filter(function(p){return p.id == btn.dataset.id;})[0];
+    openTradeModal(post);
+  });
+
+  // ---------------- Matchmaker ----------------
+  var matchNames = ["Priya N.","Marcus T.","Elena R.","Jonah K.","Aisha B.","Sam W.","Devon L.","Nina F.","Theo M.","Casey P.","Wren A."];
+  var matchLocs = ["North Quad","Riverside Hall","Maple Commons","Art Building","Tech Annex","Library West","South Hall"];
+
+  document.getElementById("findMatchBtn").addEventListener("click", function(){
+    var offer = document.getElementById("offerInput").value.trim();
+    var need = document.getElementById("needInput").value.trim();
+    var cat = document.getElementById("mmCategory").value;
+    var resultBox = document.getElementById("matchResult");
+
+    if(!offer || !need){
+      resultBox.className = "match-result";
+      resultBox.innerHTML = '<div style="font-size:2.2rem;">✏️</div><div>Tell us both what you can offer and what you need — then we\'ll search.</div>';
+      return;
+    }
+
+    resultBox.className = "match-result";
+    resultBox.innerHTML = '<div style="font-size:2.2rem;">🌀</div><div>Searching nearby offers…</div>';
+
+    setTimeout(function(){
+      var matchName = matchNames[Math.floor(Math.random()*matchNames.length)];
+      var matchLoc = matchLocs[Math.floor(Math.random()*matchLocs.length)];
+      var confidence = 84 + Math.floor(Math.random()*13);
+      resultBox.className = "match-result found";
+      resultBox.innerHTML =
+        '<div class="match-icon">💡</div>'+
+        '<div class="match-title">Smart Match Found!</div>'+
+        '<div class="match-detail">Connected with <b>'+matchName+'</b> near '+matchLoc+', who has "'+need+'" and wants exactly what you offer: "'+offer+'".</div>'+
+        '<div class="match-confidence">'+confidence+'% compatibility</div>'+
+        '<button class="primary-btn" id="mmProposeBtn" style="margin-top:6px;">Start the trade</button>';
+      document.getElementById("mmProposeBtn").addEventListener("click", function(){
+        openTradeModal({title: need, desc: "Trade proposed via AI Matchmaker: \""+offer+"\" for \""+need+"\".", name: matchName, loc: matchLoc, cat: cat});
+      });
+    }, 900);
+  });
+
+  // ---------------- Trade modal ----------------
+  var overlay = document.getElementById("tradeOverlay");
+  var currentPost = null;
+
+  function openTradeModal(post){
+    currentPost = post;
+    document.getElementById("tradeModalTitle").textContent = "Propose a trade";
+    document.getElementById("tradeModalSub").textContent = "Review the details, then confirm with "+post.name+".";
+    var col = colorFor(post.name);
+    document.getElementById("tradeModalItem").innerHTML =
+      '<div class="avatar" style="background:'+col+'">'+initials(post.name)+'</div>'+
+      '<div><b>'+post.title+'</b><br><span style="font-size:0.82rem; color:var(--ink-soft);">'+post.name+' · '+post.loc+'</span></div>';
+    document.getElementById("chatArea").innerHTML =
+      '<div class="chat-bubble">Hi! I saw your post — I think this could be a great trade for both of us 🌿</div>'+
+      '<div class="chat-bubble me">Sounds good, let\'s make it official!</div>';
+    overlay.classList.add("active");
+  }
+
+  document.getElementById("closeTradeModal").addEventListener("click", function(){ overlay.classList.remove("active"); });
+  document.getElementById("declineTradeBtn").addEventListener("click", function(){ overlay.classList.remove("active"); });
+  overlay.addEventListener("click", function(e){ if(e.target === overlay) overlay.classList.remove("active"); });
+
+  document.getElementById("acceptTradeBtn").addEventListener("click", function(){
+    overlay.classList.remove("active");
+    completeTrade(currentPost);
+  });
+
+  // ---------------- Trade completion → garden growth ----------------
+  function completeTrade(post){
+    state.tradeCount++;
+    state.people += Math.random() > 0.5 ? 1 : 0;
+    document.getElementById("tradeCountNav").textContent = state.tradeCount;
+    state.log.unshift({a:"You", b: post.name || "a neighbor", what: post.title});
+    if(state.log.length > 8) state.log.pop();
+
+    showCheckmark();
+    showToast("🌱 Trade complete — a new plant just sprouted in the garden!");
+    growOnePlant();
+    renderGarden();
+  }
+
+  function showCheckmark(){
+    var pop = document.getElementById("checkmarkPop");
+    pop.classList.add("show");
+    setTimeout(function(){ pop.classList.remove("show"); }, 900);
+  }
+
+  var toastTimer = null;
+  function showToast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 3200);
+  }
+
+  function growOnePlant(){
+    state.plants.push(plantEmojis[Math.floor(Math.random()*plantEmojis.length)]);
+  }
+
+  // seed initial garden to match initial trade count
+  for(var i=0;i<state.tradeCount;i++){ growOnePlant(); }
+
+  function renderGarden(){
+    document.getElementById("statTrades").textContent = state.tradeCount;
+    document.getElementById("statPlants").textContent = state.plants.length;
+    document.getElementById("statPeople").textContent = state.people;
+
+    var wrap = document.getElementById("plantsWrap");
+    wrap.innerHTML = "";
+    state.plants.forEach(function(p, idx){
+      var el = document.createElement("div");
+      el.className = "plant";
+      el.textContent = p;
+      el.style.fontSize = (1.6 + Math.random()*1.6)+"rem";
+      el.style.animationDelay = (idx * 0.01)+"s";
+      wrap.appendChild(el);
+    });
+
+    var log = document.getElementById("gardenLog");
+    log.innerHTML = "";
+    state.log.forEach(function(entry){
+      var row = document.createElement("div");
+      row.className = "log-row";
+      row.innerHTML = '<span>'+entry.a+' ↔ '+entry.b+'</span><span>'+entry.what+'</span>';
+      log.appendChild(row);
+    });
+  }
+
+  // ---------------- init ----------------
+  renderBoard();
+  renderGarden();
+})();
+</script>
+</body>
+</html>
